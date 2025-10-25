@@ -1,0 +1,75 @@
+# 模型配置
+model:
+  name: "HGMAF-MNER"
+  bert_model: "bert-base-uncased"
+  image_encoder: "resnet152"
+  num_labels: 9  # O, B-PER, I-PER, B-LOC, I-LOC, B-ORG, I-ORG, B-MISC, I-MISC
+  num_emotions: 3  # positive, negative, neutral
+  hidden_size: 768
+  num_attention_heads: 8
+  dropout: 0.1
+  use_crf: true
+  use_emotion_task: true
+
+# 训练配置
+training:
+  num_epochs: 20
+  batch_size: 16
+  learning_rate: 2.0e-5
+  weight_decay: 0.01
+  warmup_steps: 500
+  max_grad_norm: 1.0
+  gradient_accumulation_steps: 1
+  mixed_precision: true  # 混合精度训练
+  
+# 数据配置
+data:
+  dataset_name: "twitter2015"
+  data_dir: "./data/twitter2015"
+  image_dir: "./data/twitter2015/images"
+  generated_image_dir: "./data/twitter2015/generated_images"
+  max_seq_length: 128
+  image_size: 224
+  num_workers: 4
+
+# 优化器配置
+optimizer:
+  type: "AdamW"
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+
+# 调度器配置
+scheduler:
+  type: "linear_warmup"
+  warmup_ratio: 0.1
+
+# 日志配置
+logging:
+  log_dir: "./outputs/logs"
+  use_tensorboard: true
+  use_wandb: false
+  wandb_project: "HGMAF-MNER"
+  save_steps: 500
+  eval_steps: 500
+  logging_steps: 100
+
+# 保存配置
+checkpoint:
+  save_dir: "./outputs/checkpoints"
+  save_total_limit: 3
+  save_best_only: true
+  metric_for_best: "f1"
+
+# 推理配置
+inference:
+  batch_size: 32
+  output_dir: "./outputs/predictions"
+  save_predictions: true
+  save_visualizations: true
+
+# 图像生成配置
+image_generation:
+  model: "stabilityai/sdxl-turbo"
+  num_inference_steps: 1
+  guidance_scale: 0.0
+  device: "cuda"
